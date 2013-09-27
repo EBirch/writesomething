@@ -4,6 +4,6 @@ angular.module('write.controllers', []).
   controller('mainCtrl',function($scope){
 
 }).
-controller('loginCtrl', function($scope, $rootScope, $location, session) {
+controller('loginCtrl', function($scope, $rootScope, $location) {
 
 });

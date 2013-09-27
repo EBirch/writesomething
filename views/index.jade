@@ -6,9 +6,8 @@ html(ng-app="write")
     title Write Something
     link(rel='stylesheet', href='/css/app.css')
     link(rel='stylesheet', href='/css/twitter-bootstrap.min.css')
-  body(contentEditable="true", onload="load()")
-    div(ng-controller='mainCtrl')
-      div(ng-view)
+  body(ng-controller='mainCtrl')
+    div(ng-view)
 
     script(src='/js/lib/angular/angular.min.js')
     script(src='/js/lib/angular/angular-resource.min.js')
@@ -19,6 +18,3 @@ html(ng-app="write")
     script(src='/js/controllers.js')
     script(src='/js/filters.js')
     script(src='/js/directives.js')
-    script function load(){
-             window.document.designMode = "On";
-           }

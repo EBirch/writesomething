@@ -11,17 +11,9 @@ angular.module('write', [
 config(function ($routeProvider, $locationProvider) {
    $routeProvider.
    when('/', {
-      templateUrl: 'eventlist',
-      controller: 'eventListCtrl'
+      templateUrl: '/partials/main',
+      controller: 'loginCtrl'
     }).
-   when('/login', {
-    templateUrl: 'login',
-    controller: 'loginCtrl'
-  }).
-   when('/logout', {
-    templateUrl: 'login',
-    controller: 'logoutCtrl'
-  }).
    otherwise({
     redirectTo: '/'
   });

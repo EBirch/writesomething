@@ -1,5 +1,3 @@
-var sessions=require('../misc/sessions');
-
 exports.index=function(req, res){
   res.render('index');
 };
