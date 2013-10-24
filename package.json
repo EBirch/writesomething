@@ -5,10 +5,5 @@
   "dependencies": {
     "express": "~3.2.6",
     "jade": "~0.31.2"
-  },
-  "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-karma": "~0.4.4",
-    "grunt-contrib-jshint": "~0.2.0"
   }
 }

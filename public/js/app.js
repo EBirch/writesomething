@@ -5,8 +5,8 @@ angular.module('write', [
   'write.filters',
   'write.services',
   'write.directives',
-  'ui.tinymce',
-  'ngResource'
+  'ui.utils',
+  'markitupNG'
 ]).
 config(function ($routeProvider, $locationProvider) {
    $routeProvider.
