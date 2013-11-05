@@ -10,7 +10,8 @@ var app = module.exports = express(),
 	localStrategy=require('passport-local').Strategy,
 	conn = new(cradle.Connection)();
 
-var User=conn.database('users');
+var User=conn.database('users'),
+		Docs=conn.database('docs');
 
 var register=function(req, res){
 	// console.log(req.body.body);
@@ -123,10 +124,14 @@ app.get('*', function(req, res, next) {
 });
 
 app.get('/doclist', function(req, res){
-	res.json([{title:'Test', data:'stuff'}, {title:'test2', data:'morestuff'}]);
-	// res.json({});
+	Docs.view('docs/author', {key:req.user._id}, function(err, doc){
+		var temp=[];
+		for(obj in doc){
+			temp.push(doc[obj].value);
+		}
+		res.json(temp);
+  });
 });
-
 
 app.get('/logout', function(req, res){
 	console.log('logging out');
@@ -150,6 +155,44 @@ app.post('/login', function(req, res, next) {
       return res.json({res:true});
     });
   })(req, res, next);
+});
+
+app.post('/doc', function(req, res, next){
+  if(req.body.id===''){
+  	res.json({res:false});
+  }
+  else{
+  	Docs.get(req.body.id, function(err, doc){
+  		console.log(doc.auth+" : "+req.user._id);
+  		if(doc.auth!=req.user._id){
+  			res.json({res:false});
+  		}
+  		else{
+  			res.json({res:true, title:doc.title, doc:doc.doc});
+  		}
+  	});
+  }
+});
+
+app.put('/doc', function(req, res){
+	if(req.body.id===''){
+		Docs.save({auth:req.user._id, title:req.body.title, doc:req.body.doc}, function(err, res){
+			//TODO?
+		});
+  }
+	else{
+  	Docs.get(req.body.id, function(err, doc){
+  		if(doc.auth!=req.user._id){
+  			console.log("bad user update");
+  			res.json({res:false});
+  		}
+  		else{
+  			Docs.merge(req.body.id, {title:req.body.title, doc:req.body.doc}, function(err, res){
+  				//TODO?
+  			});
+  		}
+  	});
+  }
 });
 
 app.get('*', function(req, res){

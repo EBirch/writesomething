@@ -18,7 +18,19 @@
 //   factory('User', function($resource){
 //     return $resource('/api/user');
 //   });
-angular.module('write.services', ['ngResource']).
-  factory('User', function($resource){
-    return $resource('/login');
-  });
+// angular.module('write.services', ['ngResource']).
+//   factory('User', function($resource){
+//     return $resource('/login');
+//   });
+angular.module('write.services', [])
+    .service('editDoc', function(){
+      var id='';
+      return {
+        getDocId: function(){
+          return id;
+        },
+        setDocId: function(value){
+          id=value;
+        }
+      };
+    });

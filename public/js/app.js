@@ -28,9 +28,9 @@ config(function ($routeProvider, $locationProvider){
       templateUrl: '/partials/main',
       controller: 'mainCtrl'
     }).
-   when('/new', {
-      templateUrl: '/partials/new',
-      controller: 'newCtrl'
+   when('/edit', {
+      templateUrl: '/partials/edit',
+      controller: 'editCtrl'
     }).
    when('/test', {
       templateUrl: '/partials/test',

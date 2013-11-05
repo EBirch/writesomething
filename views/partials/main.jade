@@ -1,4 +1,4 @@
-a(href="/new") New Doc
+p(ng-click="edit('')") New Doc
 div(ng-repeat="doc in docs")
-	p {{doc.title}}
+	p(ng-click="edit(doc.id)") {{doc.title}}
 div(ng-if="!docs.length") No Documents

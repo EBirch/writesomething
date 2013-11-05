@@ -13,6 +13,9 @@ controller('rootCtrl', function($scope, $log, $http, $location, $rootScope){
   //       // $rootScope.loggedIn=true;
   //       // $location.path("/test");
   //     });
+  $scope.logout=function(){
+    $rootScope.loggedIn=false;
+  };
   $log.log($scope.loggedIn);
   $rootScope.loggedIn=$scope.loggedIn;
   $scope.$watch(function(){return $location.path();}, function(newValue, oldValue){  
@@ -23,7 +26,11 @@ controller('rootCtrl', function($scope, $log, $http, $location, $rootScope){
     }
   });
 }).
-controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, User){
+controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, editDoc){
+  $scope.edit=function(id){
+    editDoc.setDocId(id);
+    $location.path('/edit');
+  };
   $scope.docs=[{title:""}];
   $http({
       method : 'GET',
@@ -35,10 +42,33 @@ controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, User
       }
     });
 }).
-controller('newCtrl', function($scope, $log, $http, $location, $rootScope, User){
+controller('editCtrl', function($scope, $log, $http, $location, $rootScope, editDoc){
+  $scope.id=editDoc.getDocId();
+  editDoc.setDocId('');
+  $http({
+    method : 'POST',
+    url : '/doc',
+    data : {id:$scope.id}
+  }).success(function(data){
+    if(data.res){
+      $scope.doc=data.doc;
+      $scope.title=data.title;
+    }
+  });
 
+  $scope.save=function(){
+    $http({
+      method : 'PUT',
+      url : '/doc',
+      data : {
+        title:$scope.title,
+        doc:$scope.doc,
+        id:$scope.id
+      }
+    });
+  }
 }).
-controller('registerCtrl', function($scope, $log, $http, $location, $rootScope, User){
+controller('registerCtrl', function($scope, $log, $http, $location, $rootScope){
   $scope.test={};
   $scope.submit=function(){
     $http({
@@ -59,7 +89,7 @@ controller('registerCtrl', function($scope, $log, $http, $location, $rootScope, 
     });
   };
 }).
-controller('loginCtrl', function($scope, $log, $http, $rootScope, $location, User){
+controller('loginCtrl', function($scope, $log, $http, $rootScope, $location){
   $scope.test={};
   $scope.logout=function(){
     $rootScope.loggedIn=false;
