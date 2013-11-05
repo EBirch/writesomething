@@ -3,7 +3,7 @@
 var justwrite=false;
 
 angular.module('write.controllers', []).
-controller('mainCtrl', function($scope, $log, $http, $location, $rootScope){
+controller('rootCtrl', function($scope, $log, $http, $location, $rootScope){
   // $http({
   //     method : 'GET',
   //     url : '/',
@@ -20,8 +20,23 @@ controller('mainCtrl', function($scope, $log, $http, $location, $rootScope){
     if (!$rootScope.loggedIn&&newValue!='/login'&&newValue!='/register'){  
       $log.log('go login');
       $location.path('/login');  
-    }  
+    }
   });
+}).
+controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, User){
+  $scope.docs=[{title:""}];
+  $http({
+      method : 'GET',
+      url : '/doclist'
+    }).success(function(data){
+      $scope.docs=data;
+      if(Object.keys($scope.docs).length==0){
+        $scope.data=[];
+      }
+    });
+}).
+controller('newCtrl', function($scope, $log, $http, $location, $rootScope, User){
+
 }).
 controller('registerCtrl', function($scope, $log, $http, $location, $rootScope, User){
   $scope.test={};
@@ -46,6 +61,9 @@ controller('registerCtrl', function($scope, $log, $http, $location, $rootScope, 
 }).
 controller('loginCtrl', function($scope, $log, $http, $rootScope, $location, User){
   $scope.test={};
+  $scope.logout=function(){
+    $rootScope.loggedIn=false;
+  };
   $scope.submit=function(){
     $http({
         method : 'POST',
@@ -59,7 +77,11 @@ controller('loginCtrl', function($scope, $log, $http, $rootScope, $location, Use
       if(data.res){
         $log.log('hooray');
         $rootScope.loggedIn=true;
-        // $location.path("/test");
+        $location.path("/main");
+      }
+      if(!data.res){
+        $rootScope.loggedIn=false;
+        $location.path("/login");
       }
     });
   };

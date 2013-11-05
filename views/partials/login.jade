@@ -3,7 +3,7 @@ a(href="/register") Register
 br
 a(href="/test") Test Login
 br
-a(href="/logout") Logout
+a(href="/logout", ng-click="logout()") Logout
 form(ng-submit="submit()")
 	label Username
 	input(type="text", name="username", ng-model="test.username")

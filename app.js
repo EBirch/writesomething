@@ -12,8 +12,6 @@ var app = module.exports = express(),
 
 var User=conn.database('users');
 
-
-
 var register=function(req, res){
 	// console.log(req.body.body);
 	User.get(req.body.username, function(err, user) {
@@ -124,6 +122,12 @@ app.get('*', function(req, res, next) {
   // })(req, res, next);
 });
 
+app.get('/doclist', function(req, res){
+	res.json([{title:'Test', data:'stuff'}, {title:'test2', data:'morestuff'}]);
+	// res.json({});
+});
+
+
 app.get('/logout', function(req, res){
 	console.log('logging out');
 	req.logout();
@@ -136,8 +140,11 @@ app.post('/register', register);
 app.post('/login', function(req, res, next) {
 	console.log('trylogin');
   passport.authenticate('local', function(err, user, info) {
+  	if(req.user){
+  		req.logout();
+  	}
     if (err) { return next(err); }
-    if (!user) { return res.redirect('/login'); }
+    if (!user) { return res.json({res:false}); }
     req.logIn(user, function(err) {
       if (err) { return next(err); }
       return res.json({res:true});

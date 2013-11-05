@@ -7,13 +7,14 @@ angular.module('write', [
   'write.directives',
   'ui.utils',
   'markitupNG',
-  'ngResource'
+  'ngResource',
+  'ngRoute'
 ]).
-config(function ($routeProvider, $locationProvider) {
+config(function ($routeProvider, $locationProvider){
    $routeProvider.
    when('/', {
-      templateUrl: '/partials/login',
-      controller: 'loginCtrl'
+      templateUrl: '/partials/main',
+      controller: 'mainCtrl'
     }).
    when('/login', {
       templateUrl: '/partials/login',
@@ -23,9 +24,13 @@ config(function ($routeProvider, $locationProvider) {
       templateUrl: '/partials/register',
       controller: 'registerCtrl'
     }).
-   when('/bad', {
-      templateUrl: '/partials/bad',
-      controller: 'registerCtrl'
+   when('/main', {
+      templateUrl: '/partials/main',
+      controller: 'mainCtrl'
+    }).
+   when('/new', {
+      templateUrl: '/partials/new',
+      controller: 'newCtrl'
     }).
    when('/test', {
       templateUrl: '/partials/test',

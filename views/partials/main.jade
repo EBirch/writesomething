@@ -1,0 +1,4 @@
+a(href="/new") New Doc
+div(ng-repeat="doc in docs")
+	p {{doc.title}}
+div(ng-if="!docs.length") No Documents
