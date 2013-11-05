@@ -1,9 +1,13 @@
 {
-  "name": "application-name",
+  "name": "writesomething",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "express": "~3.2.6",
-    "jade": "~0.31.2"
+    "express": ">=3.4.3",
+    "jade": ">=0.35.0",
+    "cradle": ">=0.6.6",
+    "passport": ">=0.1.17",
+    "passport-local": ">=0.1.6",
+    "bcrypt": ">=0.7.7"
   }
 }

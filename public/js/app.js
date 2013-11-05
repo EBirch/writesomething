@@ -6,13 +6,30 @@ angular.module('write', [
   'write.services',
   'write.directives',
   'ui.utils',
-  'markitupNG'
+  'markitupNG',
+  'ngResource'
 ]).
 config(function ($routeProvider, $locationProvider) {
    $routeProvider.
    when('/', {
-      templateUrl: '/partials/main',
+      templateUrl: '/partials/login',
       controller: 'loginCtrl'
+    }).
+   when('/login', {
+      templateUrl: '/partials/login',
+      controller: 'loginCtrl'
+    }).
+   when('/register', {
+      templateUrl: '/partials/register',
+      controller: 'registerCtrl'
+    }).
+   when('/bad', {
+      templateUrl: '/partials/bad',
+      controller: 'registerCtrl'
+    }).
+   when('/test', {
+      templateUrl: '/partials/test',
+      controller: 'registerCtrl'
     }).
    otherwise({
     redirectTo: '/'
