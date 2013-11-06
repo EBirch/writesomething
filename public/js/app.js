@@ -8,36 +8,33 @@ angular.module('write', [
   'ui.utils',
   'markitupNG',
   'ngResource',
-  'ngRoute'
+  'ngRoute',
+  'ui.bootstrap.modal'
 ]).
 config(function ($routeProvider, $locationProvider){
-   $routeProvider.
-   when('/', {
+  $routeProvider.
+    when('/', {
       templateUrl: '/partials/main',
       controller: 'mainCtrl'
     }).
-   when('/login', {
+    when('/login', {
       templateUrl: '/partials/login',
       controller: 'loginCtrl'
     }).
-   when('/register', {
+    when('/register', {
       templateUrl: '/partials/register',
       controller: 'registerCtrl'
     }).
-   when('/main', {
+    when('/main', {
       templateUrl: '/partials/main',
       controller: 'mainCtrl'
     }).
-   when('/edit', {
+    when('/edit', {
       templateUrl: '/partials/edit',
       controller: 'editCtrl'
     }).
-   when('/test', {
-      templateUrl: '/partials/test',
-      controller: 'registerCtrl'
-    }).
-   otherwise({
-    redirectTo: '/'
+    otherwise({
+      redirectTo: '/'
   });
 
   $locationProvider.html5Mode(true);

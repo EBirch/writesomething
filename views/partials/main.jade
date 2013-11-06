@@ -1,4 +1,6 @@
 p(ng-click="edit('')") New Doc
 div(ng-repeat="doc in docs")
-	p(ng-click="edit(doc.id)") {{doc.title}}
+	a(href="", ng-click="edit(doc.id)") {{doc.title}}
+	span  - 
+		a(href="", ng-click="delete(doc)") Delete
 div(ng-if="!docs.length") No Documents

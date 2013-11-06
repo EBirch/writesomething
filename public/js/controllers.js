@@ -2,37 +2,39 @@
 
 var justwrite=false;
 
-angular.module('write.controllers', []).
+angular.module('write.controllers', ['ui.bootstrap.modal']).
 controller('rootCtrl', function($scope, $log, $http, $location, $rootScope){
-  // $http({
-  //     method : 'GET',
-  //     url : '/',
-  //   }).success(function(data){
-  //     $rootScope.loggedIn=data.res;
-  //       // $log.log('hooray');
-  //       // $rootScope.loggedIn=true;
-  //       // $location.path("/test");
-  //     });
   $scope.logout=function(){
     $rootScope.loggedIn=false;
   };
-  $log.log($scope.loggedIn);
   $rootScope.loggedIn=$scope.loggedIn;
   $scope.$watch(function(){return $location.path();}, function(newValue, oldValue){  
-    $log.log("redirect", $rootScope.loggedIn, newValue);
     if (!$rootScope.loggedIn&&newValue!='/login'&&newValue!='/register'){  
-      $log.log('go login');
       $location.path('/login');  
     }
   });
 }).
-controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, editDoc){
+controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, $modal, editDoc){
   $scope.edit=function(id){
     editDoc.setDocId(id);
     $location.path('/edit');
   };
-  $scope.docs=[{title:""}];
-  $http({
+  $scope.delete=function(doc){
+    var test=confirm("Delete "+doc.title+"?\nThis cannot be undone.");
+    if(test){
+      $http({
+        method : 'POST',
+        url : '/delete',
+        data : {
+          id: doc.id
+        }
+      }).success(function(data){
+        $scope.update();
+      });
+    }
+  };
+  $scope.update=function(){
+    $http({
       method : 'GET',
       url : '/doclist'
     }).success(function(data){
@@ -41,6 +43,10 @@ controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, edit
         $scope.data=[];
       }
     });
+  };
+
+  $scope.docs=[{title:""}];
+  $scope.update();
 }).
 controller('editCtrl', function($scope, $log, $http, $location, $rootScope, editDoc){
   $scope.id=editDoc.getDocId();
@@ -53,6 +59,7 @@ controller('editCtrl', function($scope, $log, $http, $location, $rootScope, edit
     if(data.res){
       $scope.doc=data.doc;
       $scope.title=data.title;
+      // $scope.$apply();
     }
   });
 
@@ -64,6 +71,10 @@ controller('editCtrl', function($scope, $log, $http, $location, $rootScope, edit
         title:$scope.title,
         doc:$scope.doc,
         id:$scope.id
+      }
+    }).success(function(data){
+      if(data.res){
+        $scope.id=data.id;
       }
     });
   }
@@ -80,12 +91,9 @@ controller('registerCtrl', function($scope, $log, $http, $location, $rootScope){
         email:$scope.test.email
       }
     }).success(function(data){
-      // console.log(data);
-      // if(data.res){
-      //   // $log.log('hooray');
-      //   // $rootScope.loggedIn=true;
-      //   // $location.path("/test");
-      // }
+      if(data.res){
+        $location.path('/login');
+      }
     });
   };
 }).
@@ -103,9 +111,7 @@ controller('loginCtrl', function($scope, $log, $http, $rootScope, $location){
           password:$scope.test.password
         }
     }).success(function(data){
-      // console.log(data);
       if(data.res){
-        $log.log('hooray');
         $rootScope.loggedIn=true;
         $location.path("/main");
       }

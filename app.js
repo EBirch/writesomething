@@ -14,21 +14,20 @@ var User=conn.database('users'),
 		Docs=conn.database('docs');
 
 var register=function(req, res){
-	// console.log(req.body.body);
-	User.get(req.body.username, function(err, user) {
+	User.get(req.body.username, function(err, user){
 		if(err){
-			bcrypt.genSalt(function(err, salt) {
-		    bcrypt.hash(req.body.password, salt, function(err, hash) {
+			bcrypt.genSalt(function(err, salt){
+		    bcrypt.hash(req.body.password, salt, function(err, hash){
 				  User.save(req.body.username, {
 			      password: hash, 
-			      email: req.body.email,
 			      salt: salt
-				  }, function (err, res) {
+				  }, function (err, userRes) {
 				      if(err){
 				      	console.log(err);
 				      }
 				      else{
 				      	console.log('User created');
+								res.json({res:true});
 				      }
 		  		});
 				});
@@ -36,7 +35,7 @@ var register=function(req, res){
 		}
 		else{
 			console.log('User already exists');
-			res.json({reg:false});
+			res.json({res:false});
 		}
 	}
 )};
@@ -45,7 +44,8 @@ app.configure(function(){
 	app.set('views', __dirname + '/views');
 	app.locals.pretty = true;
 	app.set('view engine', 'jade');
-	app.use(express.bodyParser());
+	app.use(express.limit('30mb'));
+	app.use(express.bodyParser({limit:30000000}));
 	app.use(express.cookieParser());
 	app.use(express.methodOverride());
 	app.use(express.static(path.join(__dirname, 'public')));
@@ -57,7 +57,6 @@ app.configure(function(){
 
 passport.use(new localStrategy(
 	function(username, password, done){
-		console.log('tryauth');
 		User.get(username, function(err, user){
 			// if (err) { console.log('err:');console.log(err);return done(err); }
 			console.log(user);
@@ -71,7 +70,7 @@ passport.use(new localStrategy(
 					return done(null, false, { message: 'Incorrect password.' });
 				}
 				else{
-					console.log('yay login');
+					console.log('login success');
 					return done(null, user);
 				}
 			});
@@ -79,15 +78,10 @@ passport.use(new localStrategy(
 }));
 
 passport.serializeUser(function(user, done) {
-  // please read the Passport documentation on how to implement this. We're now
-  // just serializing the entire 'user' object. It would be more sane to serialize
-  // just the unique user-id, so you can retrieve the user object from the database
-  // in .deserializeUser().
   done(null, user._id);
 });
 
 passport.deserializeUser(function(user, done) {
-  // Again, read the documentation.
   User.get(user, function(err, user){
   	console.log('deserialize');
   	done(null, user);
@@ -104,23 +98,12 @@ app.get('/partials/register', function(req, res){
 	res.render('partials/register');
 });
 app.get('*', function(req, res, next) {
-	console.log("enter catchall");
-	// console.log(req);
 	if(req.user){
 		next();
 	}
 	else{
-		console.log('no');return res.render('index', {auth:false});
+		console.log('not authorized');return res.render('index', {auth:false});
 	}
-  // passport.authenticate('local', function(err, user, info) {
-  //   if (err) { return next(err); }
-  //   if (!user) { console.log('no');return res.render('index'); }
-  //   req.logIn(user, function(err) {
-  //     if (err) { return next(err); }
-  //     console.log('welp');
-  //     return;
-  //   });
-  // })(req, res, next);
 });
 
 app.get('/doclist', function(req, res){
@@ -139,11 +122,15 @@ app.get('/logout', function(req, res){
 	res.render('index', {auth:false});
 });
 app.get('/partials/:name', routes.partials);
+app.get('/template/modal/:name', function (req, res){
+  var name=req.params.name;
+  res.render('template/modal/'+name);
+});
 
 app.post('/api/user', api.user);
 app.post('/register', register);
 app.post('/login', function(req, res, next) {
-	console.log('trylogin');
+	// console.log('trylogin');
   passport.authenticate('local', function(err, user, info) {
   	if(req.user){
   		req.logout();
@@ -163,7 +150,6 @@ app.post('/doc', function(req, res, next){
   }
   else{
   	Docs.get(req.body.id, function(err, doc){
-  		console.log(doc.auth+" : "+req.user._id);
   		if(doc.auth!=req.user._id){
   			res.json({res:false});
   		}
@@ -174,10 +160,26 @@ app.post('/doc', function(req, res, next){
   }
 });
 
+app.post('/delete', function(req, res){
+	Docs.get(req.body.id, function(err, doc){
+		if(doc.auth!=req.user._id){
+			res.json({res:false});
+		}
+		else{
+			Docs.remove(doc._id, doc._rev, function(err, docRes){
+				if(err)console.log(err);
+				console.log('thing deleted');
+				res.json({res:true});
+			});
+		}
+	})
+});
+
 app.put('/doc', function(req, res){
 	if(req.body.id===''){
-		Docs.save({auth:req.user._id, title:req.body.title, doc:req.body.doc}, function(err, res){
-			//TODO?
+		console.log('new doc');
+		Docs.save({auth:req.user._id, title:req.body.title, doc:req.body.doc}, function(err, docRes){
+			res.json({res:docRes.ok, id:docRes.id});
 		});
   }
 	else{
@@ -187,7 +189,8 @@ app.put('/doc', function(req, res){
   			res.json({res:false});
   		}
   		else{
-  			Docs.merge(req.body.id, {title:req.body.title, doc:req.body.doc}, function(err, res){
+  			console.log('merge doc');
+  			Docs.merge(req.body.id, {title:req.body.title, doc:req.body.doc}, function(err, docRes){
   				//TODO?
   			});
   		}

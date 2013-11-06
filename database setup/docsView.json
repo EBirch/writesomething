@@ -1,0 +1,9 @@
+{
+   "_id": "_design/docs",
+   "language": "javascript",
+   "views": {
+       "author": {
+           "map": "function(doc) { emit(doc.auth, { 'id': doc._id, 'title': doc.title }); }"
+       }
+   }
+}
