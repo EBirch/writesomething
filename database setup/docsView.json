@@ -4,6 +4,9 @@
    "views": {
        "author": {
            "map": "function(doc) { emit(doc.auth, { 'id': doc._id, 'title': doc.title }); }"
+       },
+       "tree": {
+           "map": "function(doc) { if(doc.type==='file'){var paths=doc.path.split('\/');paths.pop();emit(paths, 1);}}"
        }
    }
 }

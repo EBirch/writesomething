@@ -44,8 +44,7 @@ app.configure(function(){
 	app.set('views', __dirname + '/views');
 	app.locals.pretty = true;
 	app.set('view engine', 'jade');
-	app.use(express.limit('30mb'));
-	app.use(express.bodyParser({limit:30000000}));
+	app.use(express.bodyParser({limit:10000000}));
 	app.use(express.cookieParser());
 	app.use(express.methodOverride());
 	app.use(express.static(path.join(__dirname, 'public')));
@@ -59,7 +58,7 @@ passport.use(new localStrategy(
 	function(username, password, done){
 		User.get(username, function(err, user){
 			// if (err) { console.log('err:');console.log(err);return done(err); }
-			console.log(user);
+			// console.log(user);
 			if(err){
 				console.log('bad username');
 				return done(null, false, { message: 'Incorrect username.' });
@@ -118,8 +117,9 @@ app.get('/doclist', function(req, res){
 
 app.get('/logout', function(req, res){
 	console.log('logging out');
-	req.logout();
-	res.render('index', {auth:false});
+	req.session.destroy(function (err) {
+		res.render('index', {auth:false});
+  });
 });
 app.get('/partials/:name', routes.partials);
 app.get('/template/modal/:name', function (req, res){
@@ -178,7 +178,8 @@ app.post('/delete', function(req, res){
 app.put('/doc', function(req, res){
 	if(req.body.id===''){
 		console.log('new doc');
-		Docs.save({auth:req.user._id, title:req.body.title, doc:req.body.doc}, function(err, docRes){
+		var path=(req.body.path!='/')?(req.body.path):('/'+req.user._id);
+		Docs.save({auth:req.user._id, title:req.body.title, doc:req.body.doc, path:path, type:"file"}, function(err, docRes){
 			res.json({res:docRes.ok, id:docRes.id});
 		});
   }

@@ -9,7 +9,7 @@ html(ng-app="write", ng-init="loggedIn=#{auth}")
     link(rel='stylesheet', href='/css/twitter-bootstrap.min.css')
     link(rel='stylesheet', href='/css/app.css')
   body(ng-controller='rootCtrl')
-    a(href='/logout', ng-click="logout()", ng-if="loggedIn") Logout
+    a(href='/logout', ng-click="logout()", ng-if="$rootScope.loggedIn") Logout
     div(ng-view)
 
     //- script(src="/js/lib/markitup/jquery-1.8.min.js")

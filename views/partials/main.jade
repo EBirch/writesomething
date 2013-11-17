@@ -1,6 +1,13 @@
-p(ng-click="edit('')") New Doc
-div(ng-repeat="doc in docs")
-	a(href="", ng-click="edit(doc.id)") {{doc.title}}
-	span  - 
-		a(href="", ng-click="delete(doc)") Delete
-div(ng-if="!docs.length") No Documents
+<script type="text/ng-template" id="tree.html">
+<a href="" ng-click="edit(doc.doc)"> {{doc.doc.title}}</a>
+<span>  - 
+<a href="" ng-click="delete(doc.doc)"> Delete</a>
+</span>
+<ul>
+<li ng-repeat="doc in doc.children" ng-include="'tree.html'" />
+</ul>
+</script>
+
+p(ng-click="edit({id:'', path:'/'})") New Doc
+div(ng-repeat="doc in docs.children", ng-include="'tree.html'")
+div(ng-if="!docs.children.length") No Documents

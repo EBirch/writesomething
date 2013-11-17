@@ -15,11 +15,13 @@ controller('rootCtrl', function($scope, $log, $http, $location, $rootScope){
   });
 }).
 controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, $modal, editDoc){
-  $scope.edit=function(id){
-    editDoc.setDocId(id);
+  $scope.edit=function(doc){
+    editDoc.setDocId(doc.id);
+    editDoc.setDocPath(doc.path);
     $location.path('/edit');
   };
   $scope.delete=function(doc){
+    //TODO: delete directory case
     var test=confirm("Delete "+doc.title+"?\nThis cannot be undone.");
     if(test){
       $http({
@@ -38,11 +40,46 @@ controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, $mod
       method : 'GET',
       url : '/doclist'
     }).success(function(data){
-      $scope.docs=data;
-      if(Object.keys($scope.docs).length==0){
-        $scope.data=[];
+      if(data.length==0){
+        $scope.docs=[];
+      }
+      else{
+        var temp=new Tree('');
+        for(var obj=0;obj<data.length;++obj){
+          var paths=data[obj].path.split('/');
+          paths.shift();
+          paths.shift();
+          paths.pop();
+          data[obj].paths=paths;
+        }
+        data.sort(function(a,b){
+          return(a.paths.length<b.paths.length)?(-1):((a.paths.length>b.paths.length)?(1):(0));
+        });
+        for(var thing=0;thing<data.length;++thing){
+          buildTree(temp, data[thing]);
+        }
+        $scope.docs=temp;
       }
     });
+  };
+  function Tree(doc,child){
+    this.doc = doc;
+    this.children = child || [];
+    this.add = function (parentDoc){
+      this.children.push(new Tree(parentDoc));
+    }
+  };
+  function buildTree(tree, doc){
+    if(doc.paths.length==0){
+      tree.add(doc);
+      return;
+    }
+    for(var childCount=0;childCount<tree.children.length;++childCount){
+      if(tree.children[childCount].doc.type==='dir'&&tree.children[childCount].doc.title===doc.paths[0]){
+        doc.paths.shift();
+        buildTree(tree.children[childCount], doc);
+      }
+    }
   };
 
   $scope.docs=[{title:""}];
@@ -51,6 +88,10 @@ controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, $mod
 controller('editCtrl', function($scope, $log, $http, $location, $rootScope, editDoc){
   $scope.id=editDoc.getDocId();
   editDoc.setDocId('');
+  $scope.path=editDoc.getDocPath();
+  editDoc.setDocPath('/');
+  // $log.log($scope.id);
+  // $log.log($scope.path);
   $http({
     method : 'POST',
     url : '/doc',
@@ -70,7 +111,8 @@ controller('editCtrl', function($scope, $log, $http, $location, $rootScope, edit
       data : {
         title:$scope.title,
         doc:$scope.doc,
-        id:$scope.id
+        id:$scope.id,
+        path:$scope.path
       }
     }).success(function(data){
       if(data.res){
