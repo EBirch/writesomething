@@ -1,15 +1,12 @@
-'use strict';
-
 angular.module('write', [
   'write.controllers',
   'write.filters',
   'write.services',
   'write.directives',
   'ui.utils',
-  'markitupNG',
   'ngResource',
   'ngRoute',
-  'ui.bootstrap.modal'
+  'ui.bootstrap'
 ]).
 config(function ($routeProvider, $locationProvider){
   $routeProvider.

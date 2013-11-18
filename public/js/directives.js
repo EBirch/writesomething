@@ -1,14 +1,5 @@
-'use strict';
-
-/* Directives */
-
 angular.module('write.directives', []).
-  directive('appVersion', function (version) {
-    return function(scope, elm, attrs) {
-      elm.text(version);
-    };
-  })
-.directive('ckEditor', function() {
+  directive('ckEditor', function() {
   return {
     require: '?ngModel',
     link: function(scope, elm, attr, ngModel) {

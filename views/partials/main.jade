@@ -1,13 +1,35 @@
+// <script type="text/ng-template" id="tree.html">
+// <span ng-if="doc.doc.type==='file'">
+// <a href="" ng-click="edit(doc.doc)"> {{doc.doc.title}}</a>
+// <span>  - </span>
+// <a href="" ng-click="delete(doc.doc)"> Delete</a>
+// </span>
+// <span ng-if="doc.doc.type==='dir'">
+// <span> {{doc.doc.title}}</span>
+// </span>
+// <ul>
+// <li ng-repeat="doc in doc.children" ng-include="'tree.html'" />
+// </ul>
+// </script>
+
+// p(ng-click="edit({id:'', path:'/'})") New Doc
+// div(ng-repeat="doc in docs.children", ng-include="'tree.html'")
+// div(ng-if="!docs.children.length") No Documents
+
 <script type="text/ng-template" id="tree.html">
+<span ng-if="doc.doc.type==='file'">
 <a href="" ng-click="edit(doc.doc)"> {{doc.doc.title}}</a>
-<span>  - 
+<span>  - </span>
 <a href="" ng-click="delete(doc.doc)"> Delete</a>
 </span>
-<ul>
-<li ng-repeat="doc in doc.children" ng-include="'tree.html'" />
-</ul>
+<span ng-if="doc.doc.type==='dir'">
+<accordion-group heading="{{doc.doc.title}}">
+<div ng-repeat="doc in doc.children" ng-include="'tree.html'" />
+</accordion-group>
+</span>
 </script>
 
 p(ng-click="edit({id:'', path:'/'})") New Doc
-div(ng-repeat="doc in docs.children", ng-include="'tree.html'")
+accordion
+	div(ng-repeat="doc in docs.children", ng-include="'tree.html'")
 div(ng-if="!docs.children.length") No Documents

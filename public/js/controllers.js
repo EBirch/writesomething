@@ -3,13 +3,16 @@
 var justwrite=false;
 
 angular.module('write.controllers', ['ui.bootstrap.modal']).
-controller('rootCtrl', function($scope, $log, $http, $location, $rootScope){
+controller('rootCtrl', function($scope, $log, $http, $location){
   $scope.logout=function(){
-    $rootScope.loggedIn=false;
+    $scope.loggedIn=false;
   };
-  $rootScope.loggedIn=$scope.loggedIn;
-  $scope.$watch(function(){return $location.path();}, function(newValue, oldValue){  
-    if (!$rootScope.loggedIn&&newValue!='/login'&&newValue!='/register'){  
+  // $rootScope.loggedIn=$scope.loggedIn;
+  $scope.$watch(function(){return $location.path();}, function(newValue, oldValue){
+    if($scope.loggedIn&&newValue==='/login'){
+      $location.path('/main');
+    }
+    else if (!$scope.loggedIn&&newValue!='/login'&&newValue!='/register'){  
       $location.path('/login');  
     }
   });
@@ -90,8 +93,6 @@ controller('editCtrl', function($scope, $log, $http, $location, $rootScope, edit
   editDoc.setDocId('');
   $scope.path=editDoc.getDocPath();
   editDoc.setDocPath('/');
-  // $log.log($scope.id);
-  // $log.log($scope.path);
   $http({
     method : 'POST',
     url : '/doc',
@@ -100,7 +101,6 @@ controller('editCtrl', function($scope, $log, $http, $location, $rootScope, edit
     if(data.res){
       $scope.doc=data.doc;
       $scope.title=data.title;
-      // $scope.$apply();
     }
   });
 
@@ -139,10 +139,10 @@ controller('registerCtrl', function($scope, $log, $http, $location, $rootScope){
     });
   };
 }).
-controller('loginCtrl', function($scope, $log, $http, $rootScope, $location){
+controller('loginCtrl', function($scope, $log, $http, $location){
   $scope.test={};
   $scope.logout=function(){
-    $rootScope.loggedIn=false;
+    $scope.$parent.loggedIn=false;
   };
   $scope.submit=function(){
     $http({
@@ -154,11 +154,11 @@ controller('loginCtrl', function($scope, $log, $http, $rootScope, $location){
         }
     }).success(function(data){
       if(data.res){
-        $rootScope.loggedIn=true;
+        $scope.$parent.loggedIn=true;
         $location.path("/main");
       }
       if(!data.res){
-        $rootScope.loggedIn=false;
+        $scope.$parent.loggedIn=false;
         $location.path("/login");
       }
     });
