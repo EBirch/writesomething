@@ -1,13 +1,12 @@
-'use strict';
-
-var justwrite=false;
-
 angular.module('write.controllers', ['ui.bootstrap.modal']).
 controller('rootCtrl', function($scope, $log, $http, $location){
   $scope.logout=function(){
     $scope.loggedIn=false;
+    $http({
+      method : 'GET',
+      url : '/logout'
+    });
   };
-  // $rootScope.loggedIn=$scope.loggedIn;
   $scope.$watch(function(){return $location.path();}, function(newValue, oldValue){
     if($scope.loggedIn&&newValue==='/login'){
       $location.path('/main');
