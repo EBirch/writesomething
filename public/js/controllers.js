@@ -1,5 +1,8 @@
-angular.module('write.controllers', ['ui.bootstrap.modal']).
-controller('rootCtrl', function($scope, $log, $http, $location){
+angular.module('write.controllers', []).
+controller('rootCtrl', function($scope, $log, $http, $location, $timeout){
+  $scope.closeError=function(){
+    $scope.errors=[];
+  };
   $scope.logout=function(){
     $scope.loggedIn=false;
     $http({
@@ -7,7 +10,13 @@ controller('rootCtrl', function($scope, $log, $http, $location){
       url : '/logout'
     });
   };
+  // $scope.$watch(function(){return $scope.errors;}, function(newVal, oldVal){
+  //   if(typeof(newVal)!=='undefined'&&newVal.length>0){
+  //     $timeout($scope.closeError, 3000);
+  //   }
+  // });
   $scope.$watch(function(){return $location.path();}, function(newValue, oldValue){
+    $scope.errors=[];
     if($scope.loggedIn&&newValue==='/login'){
       $location.path('/main');
     }
@@ -16,7 +25,7 @@ controller('rootCtrl', function($scope, $log, $http, $location){
     }
   });
 }).
-controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, $modal, editDoc){
+controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, editDoc){
   $scope.edit=function(doc){
     editDoc.setDocId(doc.id);
     editDoc.setDocPath(doc.path);
@@ -135,6 +144,10 @@ controller('registerCtrl', function($scope, $log, $http, $location, $rootScope){
       if(data.res){
         $location.path('/login');
       }
+      else{
+        $scope.$parent.errors=[data.err];
+        console.log($scope.$parent.errors);
+      }
     });
   };
 }).
@@ -159,37 +172,8 @@ controller('loginCtrl', function($scope, $log, $http, $location){
       if(!data.res){
         $scope.$parent.loggedIn=false;
         $location.path("/login");
+        $scope.$parent.errors=[data.err];
       }
     });
   };
-  // $scope.markSettings={
-  //   nameSpace:       "html", // Useful to prevent multi-instances CSS conflict
-  //   onShiftEnter:    {keepDefault:false, replaceWith:'<br />\n'},
-  //   onCtrlEnter:     {keepDefault:false, openWith:'\n<p>', closeWith:'</p>\n'},
-  //   onTab:           {keepDefault:false, openWith:'     '},
-  //   markupSet:  [
-  //       {name:'Heading 1', key:'1', openWith:'<h1(!( class="[![Class]!]")!)>', closeWith:'</h1>', placeHolder:'Your title here...' },
-  //       {name:'Heading 2', key:'2', openWith:'<h2(!( class="[![Class]!]")!)>', closeWith:'</h2>', placeHolder:'Your title here...' },
-  //       {name:'Heading 3', key:'3', openWith:'<h3(!( class="[![Class]!]")!)>', closeWith:'</h3>', placeHolder:'Your title here...' },
-  //       {name:'Heading 4', key:'4', openWith:'<h4(!( class="[![Class]!]")!)>', closeWith:'</h4>', placeHolder:'Your title here...' },
-  //       {name:'Heading 5', key:'5', openWith:'<h5(!( class="[![Class]!]")!)>', closeWith:'</h5>', placeHolder:'Your title here...' },
-  //       {name:'Heading 6', key:'6', openWith:'<h6(!( class="[![Class]!]")!)>', closeWith:'</h6>', placeHolder:'Your title here...' },
-  //       {name:'Paragraph', openWith:'<p(!( class="[![Class]!]")!)>', closeWith:'</p>'  },
-  //       {separator:'---------------' },
-  //       {name:'Bold', key:'B', openWith:'<strong>', closeWith:'</strong>' },
-  //       {name:'Italic', key:'I', openWith:'<em>', closeWith:'</em>'  },
-  //       {name:'Stroke through', key:'S', openWith:'<del>', closeWith:'</del>' },
-  //       {separator:'---------------' },
-  //       {name:'Ul', openWith:'<ul>\n', closeWith:'</ul>\n' },
-  //       {name:'Ol', openWith:'<ol>\n', closeWith:'</ol>\n' },
-  //       {name:'Li', openWith:'<li>', closeWith:'</li>' },
-  //       {separator:'---------------' },
-  //       {name:'Picture', key:'P', replaceWith:'<img src="[![Source:!:http://]!]" alt="[![Alternative text]!]" />' },
-  //       {name:'Link', key:'L', openWith:'<a href="[![Link:!:http://]!]"(!( title="[![Title]!]")!)>', closeWith:'</a>', placeHolder:'Your text to link...' },
-  //       {separator:'---------------' },
-  //       {name:'Clean', replaceWith:function(h) { return h.selection.replace(/<(.*?)>/g, ""); } },
-  //       {name:'Preview', call:'preview', className:'preview' }
-  //   ]
-  // };
-  // $scope.test=User.get();
 });

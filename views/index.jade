@@ -7,7 +7,12 @@ html(ng-app="write", ng-init="loggedIn=#{auth}")
     link(rel='stylesheet', href='/css/twitter-bootstrap.min.css')
     link(rel='stylesheet', href='/css/app.css')
   body(ng-controller='rootCtrl')
-    a(href='/logout', ng-click="logout()", ng-if="loggedIn") Logout
+    div(ng-if="loggedIn")
+      a(href='/logout', id='logoutButton', ng-click="logout()") Logout
+      br
+    //- span(id='errorContainer', ng-if='error.msg!==""')
+    alert(class='errorAlert', ng-repeat='error in errors', type="error.type", close="closeError()"){{error.msg}}
+    //- br(ng-if='error!==""||loggedIn')
     div(ng-view)
 
     script(src='/js/lib/ckeditor/ckeditor.js');
@@ -15,6 +20,7 @@ html(ng-app="write", ng-init="loggedIn=#{auth}")
     script(src='/js/lib/angular/angular.js')
     script(src='/js/lib/angular/angular-resource.min.js')
     script(src='/js/lib/angular/angular-route.min.js')
+    script(src='/js/lib/angular/angular-animate.min.js')
     //- script(src='/js/lib/ui-utils/ui-utils.js')
     script(src='/js/lib/ui-utils/ui-utils.min.js')
     script(src='/js/lib/angular-bootstrap.min.js')

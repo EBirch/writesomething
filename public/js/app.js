@@ -6,7 +6,8 @@ angular.module('write', [
   'ui.utils',
   'ngResource',
   'ngRoute',
-  'ui.bootstrap'
+  'ui.bootstrap',
+  'ngAnimate'
 ]).
 config(function ($routeProvider, $locationProvider){
   $routeProvider.

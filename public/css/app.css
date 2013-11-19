@@ -5,3 +5,8 @@ textarea {
 
   width: 100%;
 }
+
+#logoutButton{
+	float:right;
+}
+

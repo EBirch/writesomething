@@ -35,7 +35,7 @@ var register=function(req, res){
 		}
 		else{
 			console.log('User already exists');
-			res.json({res:false});
+			res.json({res:false, err:{msg:"Username already in use", type:"error"}});
 		}
 	}
 )};
@@ -82,7 +82,7 @@ passport.serializeUser(function(user, done) {
 
 passport.deserializeUser(function(user, done) {
   User.get(user, function(err, user){
-  	console.log('deserialize');
+  	// console.log('deserialize');
   	done(null, user);
   });
 });
@@ -130,13 +130,12 @@ app.get('/template/modal/:name', function (req, res){
 app.post('/api/user', api.user);
 app.post('/register', register);
 app.post('/login', function(req, res, next) {
-	// console.log('trylogin');
   passport.authenticate('local', function(err, user, info) {
   	if(req.user){
   		req.logout();
   	}
     if (err) { return next(err); }
-    if (!user) { return res.json({res:false}); }
+    if (!user) { return res.json({res:false, err:{msg:"Login Failed", type:"error"}}); }
     req.logIn(user, function(err) {
       if (err) { return next(err); }
       return res.json({res:true});
