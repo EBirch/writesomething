@@ -25,7 +25,7 @@ controller('rootCtrl', function($scope, $log, $http, $location, $timeout){
     }
   });
 }).
-controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, editDoc){
+controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, $timeout, editDoc){
   $scope.edit=function(doc){
     editDoc.setDocId(doc.id);
     editDoc.setDocPath(doc.path);
@@ -70,6 +70,20 @@ controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, edit
           buildTree(temp, data[thing]);
         }
         $scope.docs=temp;
+        // if(!$scope.$$phase){
+        //   $scope.$apply();
+        // }
+        $timeout(function(){
+        for(doc in data){
+          // angular.element(document.getElementById(data[doc].type+data[doc].id)).data(data[doc]);
+          var tempEle=document.getElementById(data[doc].type+data[doc].id);
+          // console.log(data[doc].type+data[doc].id);
+          // console.log(tempEle);
+          angular.element(tempEle).data(data[doc]);
+          // console.log(angular.element(tempEle));
+          // console.log(angular.element(tempEle).data());
+        }});
+
       }
     });
   };
@@ -92,6 +106,37 @@ controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, edit
       }
     }
   };
+
+
+  $scope.handleDragStart = function(e){
+    this.style.opacity = '0.4';
+    e.dataTransfer.setData('text/plain', angular.element(e.srcElement).data());
+    // $log.log('started drag');
+  };
+    
+  $scope.handleDragEnd = function(e){
+    this.style.opacity = '1.0';
+    // $log.log('ended drag');
+  };
+    
+  $scope.handleDrop = function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    var dataText = e.dataTransfer.getData('text/plain');
+    // $scope.$apply(function() {
+    //   $scope.items.push(dataText);
+    // });
+    console.log(dataText);
+    // console.log(angular.element(e.srcElement).data());
+  };
+    
+  $scope.handleDragOver = function (e) {
+    e.preventDefault(); // Necessary. Allows us to drop.
+    e.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
+    // $log.log('dragged over');
+    return false;
+  };
+
 
   $scope.docs=[{title:""}];
   $scope.update();

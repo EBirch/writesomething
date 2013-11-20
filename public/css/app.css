@@ -1,3 +1,10 @@
+body{
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 textarea {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -10,3 +17,30 @@ textarea {
 	float:right;
 }
 
+.dirTitle{
+	display:block;
+	/*padding:10px;*/
+}
+
+/*.accordion {
+  padding: 0;
+}
+.accordion-group {
+  margin-bottom: @baseLineHeight / 2;
+  background-color: #eee;
+  .border-radius(4px);
+}
+.accordion-heading {
+  display: block;
+  padding: 9px 15px;
+}
+.accordion-body {
+  margin-left: 0;
+  border-top: 1px solid #ddd;
+  .box-shadow(inset 0 1px 0 rgba(255,255,255,.25));
+}
+.accordion .in {
+  display: block;
+}
+
+*/
