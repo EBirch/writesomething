@@ -19,16 +19,16 @@ angular.module('write.directives', []).
     }
   };
 }).
-directive('draggable', function () {
+directive('drag', function () {
   return {
     restrict: 'A',
     link: function (scope, element, attrs) {
       element[0].addEventListener('dragstart', scope.handleDragStart, false);
-      element[0].addEventListener('dragend', scope.handleDragEnd, false);
+      // element[0].addEventListener('dragend', scope.handleDragEnd, false);
     }
   }
 }).
-directive('droppable', function () {
+directive('drop', function () {
   return {
     restrict: 'A',
     link: function (scope, element, attrs) {

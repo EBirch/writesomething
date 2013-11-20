@@ -24,6 +24,7 @@ controller('rootCtrl', function($scope, $log, $http, $location, $timeout){
       $location.path('/login');  
     }
   });
+  $scope.username='ethan';
 }).
 controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, $timeout, editDoc){
   $scope.edit=function(doc){
@@ -55,37 +56,35 @@ controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, $tim
         $scope.docs=[];
       }
       else{
-        var temp=new Tree('');
-        for(var obj=0;obj<data.length;++obj){
-          var paths=data[obj].path.split('/');
-          paths.shift();
-          paths.shift();
-          paths.pop();
-          data[obj].paths=paths;
-        }
-        data.sort(function(a,b){
-          return(a.paths.length<b.paths.length)?(-1):((a.paths.length>b.paths.length)?(1):(0));
-        });
-        for(var thing=0;thing<data.length;++thing){
-          buildTree(temp, data[thing]);
-        }
-        $scope.docs=temp;
-        // if(!$scope.$$phase){
-        //   $scope.$apply();
-        // }
-        $timeout(function(){
-        for(doc in data){
-          // angular.element(document.getElementById(data[doc].type+data[doc].id)).data(data[doc]);
-          var tempEle=document.getElementById(data[doc].type+data[doc].id);
-          // console.log(data[doc].type+data[doc].id);
-          // console.log(tempEle);
-          angular.element(tempEle).data(data[doc]);
-          // console.log(angular.element(tempEle));
-          // console.log(angular.element(tempEle).data());
-        }});
-
+        $scope.data=data;
+        updateDocList();
       }
     });
+  };
+  function updateDocList(){
+    var temp=new Tree('');
+    for(var obj=0;obj<$scope.data.length;++obj){
+      var paths=$scope.data[obj].path.split('/');
+      paths.shift();
+      paths.shift();
+      paths.pop();
+      $scope.data[obj].paths=paths;
+    }
+    $scope.data.sort(function(a,b){
+      return(a.paths.length<b.paths.length)?(-1):((a.paths.length>b.paths.length)?(1):(0));
+    });
+    for(var thing=0;thing<$scope.data.length;++thing){
+      buildTree(temp, $scope.data[thing]);
+    }
+    $scope.docs=temp;
+    if(!$scope.$$phase){
+      $scope.$apply();
+    }
+    $timeout(function(){
+    for(doc in $scope.data){
+      var tempEle=document.getElementById($scope.data[doc].type+$scope.data[doc].id);
+      angular.element(tempEle).data($scope.data[doc]);
+    }});
   };
   function Tree(doc,child){
     this.doc = doc;
@@ -106,38 +105,75 @@ controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, $tim
       }
     }
   };
+  $scope.updatePath=function(obj){
+    $http({
+      method : 'PUT',
+      url : '/path',
+      data : {
+        id:obj.id,
+        path:obj.path
+      }
+    }).success(function(data){
 
+    });
+  };
 
   $scope.handleDragStart = function(e){
-    this.style.opacity = '0.4';
-    e.dataTransfer.setData('text/plain', angular.element(e.srcElement).data());
-    // $log.log('started drag');
+    var tempData=angular.element(e.target).data();
+    e.dataTransfer.setData('application/json', JSON.stringify({title:tempData.title, path:tempData.path, type:tempData.type, id:tempData.id}));;
   };
     
   $scope.handleDragEnd = function(e){
+    console.log('drag done');
     this.style.opacity = '1.0';
-    // $log.log('ended drag');
   };
-    
+
   $scope.handleDrop = function(e){
     e.preventDefault();
     e.stopPropagation();
-    var dataText = e.dataTransfer.getData('text/plain');
-    // $scope.$apply(function() {
-    //   $scope.items.push(dataText);
-    // });
-    console.log(dataText);
-    // console.log(angular.element(e.srcElement).data());
+    var srcData=JSON.parse(e.dataTransfer.getData('application/json'));
+    var destTemp=angular.element(e.target).data();
+    var destData={path:destTemp.path, type:destTemp.type, id:destTemp.id};
+    if(typeof(destData.path)==='undefined'){
+      console.log('undefined dest path');
+      return;
+    }
+    if((srcData.id===destData.id)||(destData.type==='file')){
+      return;
+    }
+    var newPath;
+    for(obj in $scope.data){
+      if($scope.data[obj].id===srcData.id){
+        $scope.data[obj].path=destData.path+"/"+$scope.data[obj].title;
+        newPath=$scope.data[obj].path;
+        $scope.updatePath($scope.data[obj]);
+        if(srcData.type==='file'){
+          updateDocList();
+          return;
+        }
+      }
+    }
+    if(srcData.type==='dir'){
+      for(obj in $scope.data){
+        if($scope.data[obj].path.indexOf(srcData.path)==0){
+          $scope.data[obj].path=newPath+$scope.data[obj].path.substr(srcData.path.length);
+          $scope.updatePath($scope.data[obj]);
+        }
+      }
+    }
+    updateDocList();
   };
-    
-  $scope.handleDragOver = function (e) {
-    e.preventDefault(); // Necessary. Allows us to drop.
-    e.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
-    // $log.log('dragged over');
+  $scope.handleDragOver=function(e){
+    e.preventDefault();
+    e.dataTransfer.dropEffect='move';
     return false;
   };
 
-
+  $timeout(function(){
+    var tempEle=document.getElementById('listContainer');
+    angular.element(tempEle).data({path:'/'+$scope.username, id:0});
+  });
+  $scope.data=[];
   $scope.docs=[{title:""}];
   $scope.update();
 }).

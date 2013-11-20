@@ -1,13 +1,13 @@
 <script type="text/ng-template" id="tree.html">
-<span ng-if="doc.doc.type==='file'" id="file{{doc.doc.id}}" draggable>
-<a href="" class="btn btn-default" ng-click="edit(doc.doc)"> {{doc.doc.title}}</a>
-<span>  - </span>
-<a href="" class="btn btn-danger btn-xs" ng-click="delete(doc.doc)"> Delete</a>
+<span ng-if="doc.doc.type==='file'" class="fileSpan" id="file{{doc.doc.id}}" drag draggable="true">
+<a href="" class="btn btn-default" ng-click="edit(doc.doc)" draggable="false"> {{doc.doc.title}}</a>
+<span draggable="false">  - </span>
+<a href="" class="btn btn-danger btn-xs" ng-click="delete(doc.doc)" draggable="false"> Delete</a>
 </span>
-<span ng-if="doc.doc.type==='dir'" draggable droppable>
-<accordion draggable>
+<span ng-if="doc.doc.type==='dir'" drop>
+<accordion>
 <accordion-group>
-<accordion-heading><a href="" id="dir{{doc.doc.id}}" class="dirTitle" draggable>{{doc.doc.title}}</a></accordion-heading>
+<accordion-heading><a href="" id="dir{{doc.doc.id}}" class="dirTitle" drag>{{doc.doc.title}}</a></accordion-heading>
 <div ng-repeat="doc in doc.children" ng-include="'tree.html'" />
 </accordion-group>
 </accordion>
@@ -15,6 +15,7 @@
 </script>
 
 a(href="", class="btn btn-primary", ng-click="edit({id:'', path:'/'})") New Doc
+div(id="listContainer" drop) Root Folder
 accordion
-	div(ng-repeat="doc in docs.children", ng-include="'tree.html'" droppable)
+	div(ng-repeat="doc in docs.children", ng-include="'tree.html'" drop)
 div(ng-if="!docs.children.length") No Documents

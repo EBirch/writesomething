@@ -181,21 +181,44 @@ app.put('/doc', function(req, res){
 		Docs.save({auth:req.user._id, title:req.body.title, doc:req.body.doc, path:path, type:"file"}, function(err, docRes){
 			res.json({res:docRes.ok, id:docRes.id});
 		});
-  }
+	}
 	else{
-  	Docs.get(req.body.id, function(err, doc){
-  		if(doc.auth!=req.user._id){
-  			console.log("bad user update");
-  			res.json({res:false});
-  		}
-  		else{
-  			console.log('merge doc');
-  			Docs.merge(req.body.id, {title:req.body.title, doc:req.body.doc}, function(err, docRes){
-  				//TODO?
-  			});
-  		}
-  	});
-  }
+		Docs.get(req.body.id, function(err, doc){
+			if(doc.auth!=req.user._id){
+				console.log("bad user update");
+				res.json({res:false});
+			}
+			else{
+				console.log('merge doc');
+				Docs.merge(req.body.id, {title:req.body.title, doc:req.body.doc}, function(err, docRes){
+					//TODO?
+				});
+			}
+		});
+	}
+});
+
+app.put('/path', function(req, res){
+	Docs.get(req.body.id, function(err, doc){
+		if(doc.auth!=req.user._id){
+			console.log("bad user update");
+			res.json({res:false});
+		}
+		else{
+			var userPathCheck=req.body.path.split('/')[1];
+			if(typeof(userPathCheck)==='undefined'||userPathCheck!==req.user._id){
+				console.log("bad user update");
+				res.json({res:false});
+			}
+			console.log('update path');
+			Docs.merge(req.body.id, {path:req.body.path}, function(err, docRes){
+				//TODO?
+				if(err){
+					console.log(err);
+				}
+			});
+		}
+	});
 });
 
 app.get('*', function(req, res){
