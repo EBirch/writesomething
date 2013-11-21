@@ -16,6 +16,7 @@
 </script>
 
 a(href="", class="btn btn-primary", ng-click="edit({id:'', path:'/'})") New Doc
+a(href="", class="btn btn-primary", ng-click="mkdir('/')") New Folder
 div(id="listContainer" drop) Root Folder
 accordion
 	div(ng-repeat="doc in docs.children", ng-include="'tree.html'" drop)

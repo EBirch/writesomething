@@ -174,6 +174,28 @@ app.post('/delete', function(req, res){
 	})
 });
 
+app.put('/doclist', function(req, res){
+	console.log('new dir');
+	var path=(req.body.path!='/')?(req.body.path):('/'+req.user._id);
+	path+=('/'+req.body.title);
+	var good=true;
+	Docs.view('docs/author', {key:req.user._id}, function(err, doc){
+		for(obj in doc){
+			if(doc[obj].value.path===path){
+				console.log('same path');
+				res.json({res:false});
+				good=false;
+			}
+		}
+  });
+  if(good){
+  	console.log('making dir');
+		Docs.save({auth:req.user._id, title:req.body.title, path:path, type:"dir"}, function(err, docRes){
+			res.json({res:docRes.ok, id:docRes.id});
+		});
+	}
+});
+
 app.put('/doc', function(req, res){
 	if(req.body.id===''){
 		console.log('new doc');

@@ -32,8 +32,26 @@ controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, $tim
     editDoc.setDocPath(doc.path);
     $location.path('/edit');
   };
+  $scope.mkdir=function(path){
+    var name=prompt("Folder Name:");
+    if(name){
+      $http({
+        method : 'PUT',
+        url : '/doclist',
+        data :{
+          title:name,
+          path:path
+        }
+      }).success(function(data){
+        if(data.res){
+          $scope.update();
+        }
+      });
+    }
+  };
   $scope.delete=function(doc){
     //TODO: delete directory case
+    //TODO: replace confirm with modal
     var test=confirm("Delete "+doc.title+"?\nThis cannot be undone.");
     if(test){
       $http({
@@ -81,10 +99,11 @@ controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, $tim
       $scope.$apply();
     }
     $timeout(function(){
-    for(doc in $scope.data){
-      var tempEle=document.getElementById($scope.data[doc].type+$scope.data[doc].id);
-      angular.element(tempEle).data($scope.data[doc]);
-    }});
+      for(doc in $scope.data){
+        var tempEle=document.getElementById($scope.data[doc].type+$scope.data[doc].id);
+        angular.element(tempEle).data($scope.data[doc]);
+      }
+    });
   };
   function Tree(doc,child){
     this.doc = doc;
@@ -110,7 +129,8 @@ controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, $tim
       this.children=fileTemp.concat(dirTemp);
     }
   };
-$scope.buildTree= function(tree, doc){
+
+  $scope.buildTree= function(tree, doc){
     if(doc.paths.length==0){
       tree.add(doc);
       return;
@@ -122,6 +142,7 @@ $scope.buildTree= function(tree, doc){
       }
     }
   };
+
   $scope.updatePath=function(obj){
     $http({
       method : 'PUT',
@@ -158,6 +179,7 @@ $scope.buildTree= function(tree, doc){
     if((srcData.id===destData.id)||(destData.type==='file')){
       return;
     }
+    //TODO: same dir name case
     var newPath;
     for(obj in $scope.data){
       if($scope.data[obj].id===srcData.id){
@@ -248,7 +270,7 @@ controller('registerCtrl', function($scope, $log, $http, $location, $rootScope){
       }
       else{
         $scope.$parent.errors=[data.err];
-        console.log($scope.$parent.errors);
+        // console.log($scope.$parent.errors);
       }
     });
   };
