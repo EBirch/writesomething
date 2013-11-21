@@ -178,7 +178,8 @@ app.put('/doc', function(req, res){
 	if(req.body.id===''){
 		console.log('new doc');
 		var path=(req.body.path!='/')?(req.body.path):('/'+req.user._id);
-		Docs.save({auth:req.user._id, title:req.body.title, doc:req.body.doc, path:path, type:"file"}, function(err, docRes){
+		path+=('/'+req.body.title);
+		Docs.save({auth:req.user._id, title:req.body.title, doc:req.body.doc, path:path, type:"file", date:req.body.date}, function(err, docRes){
 			res.json({res:docRes.ok, id:docRes.id});
 		});
 	}
@@ -190,7 +191,7 @@ app.put('/doc', function(req, res){
 			}
 			else{
 				console.log('merge doc');
-				Docs.merge(req.body.id, {title:req.body.title, doc:req.body.doc}, function(err, docRes){
+				Docs.merge(req.body.id, {title:req.body.title, doc:req.body.doc, date:req.body.date}, function(err, docRes){
 					//TODO?
 				});
 			}

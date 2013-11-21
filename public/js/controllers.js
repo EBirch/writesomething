@@ -74,7 +74,7 @@ controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, $tim
       return(a.paths.length<b.paths.length)?(-1):((a.paths.length>b.paths.length)?(1):(0));
     });
     for(var thing=0;thing<$scope.data.length;++thing){
-      buildTree(temp, $scope.data[thing]);
+      $scope.buildTree(temp, $scope.data[thing]);
     }
     $scope.docs=temp;
     if(!$scope.$$phase){
@@ -90,10 +90,27 @@ controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, $tim
     this.doc = doc;
     this.children = child || [];
     this.add = function (parentDoc){
+      var fileTemp=[];
+      var dirTemp=[];
       this.children.push(new Tree(parentDoc));
+      for(obj in this.children){
+        if(this.children[obj].doc.type==='file'){
+          fileTemp.push(this.children[obj]);
+        }
+        else{
+          dirTemp.push(this.children[obj]);
+        }
+      }
+      fileTemp.sort(function(a,b){
+        return (a.doc.date<b.doc.date)?(-1):((a.doc.date>b.doc.date)?(1):(0));
+      });
+      dirTemp.sort(function(a,b){
+        return (a.doc.title<b.doc.title)?(-1):((a.doc.title>b.doc.title)?(1):(0));
+      });
+      this.children=fileTemp.concat(dirTemp);
     }
   };
-  function buildTree(tree, doc){
+$scope.buildTree= function(tree, doc){
     if(doc.paths.length==0){
       tree.add(doc);
       return;
@@ -101,7 +118,7 @@ controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, $tim
     for(var childCount=0;childCount<tree.children.length;++childCount){
       if(tree.children[childCount].doc.type==='dir'&&tree.children[childCount].doc.title===doc.paths[0]){
         doc.paths.shift();
-        buildTree(tree.children[childCount], doc);
+        $scope.buildTree(tree.children[childCount], doc);
       }
     }
   };
@@ -185,7 +202,9 @@ controller('editCtrl', function($scope, $log, $http, $location, $rootScope, edit
   $http({
     method : 'POST',
     url : '/doc',
-    data : {id:$scope.id}
+    data : {
+      id:$scope.id
+    }
   }).success(function(data){
     if(data.res){
       $scope.doc=data.doc;
@@ -194,6 +213,7 @@ controller('editCtrl', function($scope, $log, $http, $location, $rootScope, edit
   });
 
   $scope.save=function(){
+    date=new Date();
     $http({
       method : 'PUT',
       url : '/doc',
@@ -201,7 +221,8 @@ controller('editCtrl', function($scope, $log, $http, $location, $rootScope, edit
         title:$scope.title,
         doc:$scope.doc,
         id:$scope.id,
-        path:$scope.path
+        path:$scope.path,
+        date:date.toString()
       }
     }).success(function(data){
       if(data.res){

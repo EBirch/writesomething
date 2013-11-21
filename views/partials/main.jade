@@ -3,6 +3,7 @@
 <a href="" class="btn btn-default" ng-click="edit(doc.doc)" draggable="false"> {{doc.doc.title}}</a>
 <span draggable="false">  - </span>
 <a href="" class="btn btn-danger btn-xs" ng-click="delete(doc.doc)" draggable="false"> Delete</a>
+<span>Last Edited: {{doc.doc.date}}</span>
 </span>
 <span ng-if="doc.doc.type==='dir'" drop>
 <accordion>
