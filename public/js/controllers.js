@@ -216,23 +216,7 @@ controller('mainCtrl', function($scope, $log, $http, $location, $rootScope, $tim
   $scope.docs=[{title:""}];
   $scope.update();
 }).
-controller('editCtrl', function($scope, $log, $http, $location, $rootScope, editDoc){
-  $scope.id=editDoc.getDocId();
-  editDoc.setDocId('');
-  $scope.path=editDoc.getDocPath();
-  editDoc.setDocPath('/');
-  $http({
-    method : 'POST',
-    url : '/doc',
-    data : {
-      id:$scope.id
-    }
-  }).success(function(data){
-    if(data.res){
-      $scope.doc=data.doc;
-      $scope.title=data.title;
-    }
-  });
+controller('editCtrl', function($scope, $log, $http, $location, $rootScope, $timeout, editDoc){
 
   $scope.save=function(){
     date=new Date();
@@ -252,6 +236,30 @@ controller('editCtrl', function($scope, $log, $http, $location, $rootScope, edit
       }
     });
   }
+
+  $scope.countWords=function(){
+    $scope.count=$scope.doc.split(' ').length;
+  };
+
+  $scope.id=editDoc.getDocId();
+  editDoc.setDocId('');
+  $scope.path=editDoc.getDocPath();
+  editDoc.setDocPath('/');
+  $scope.count=0;
+  $http({
+    method : 'POST',
+    url : '/doc',
+    data : {
+      id:$scope.id
+    }
+  }).success(function(data){
+    if(data.res){
+      $scope.doc=data.doc;
+      $scope.title=data.title;
+      $scope.countWords();
+    }
+  });
+
 }).
 controller('registerCtrl', function($scope, $log, $http, $location, $rootScope){
   $scope.test={};

@@ -4,7 +4,8 @@ var express = require('express'),
   path = require('path'),
   cradle = require('cradle'),
   passport = require('passport'),
-  bcrypt = require('bcrypt');
+  bcrypt = require('bcrypt'),
+  nodemailer = require('nodemailer');
 
 var app = module.exports = express(),
 	localStrategy=require('passport-local').Strategy,
@@ -187,13 +188,13 @@ app.put('/doclist', function(req, res){
 				good=false;
 			}
 		}
+		if(good){
+	  	console.log('making dir');
+			Docs.save({auth:req.user._id, title:req.body.title, path:path, type:"dir"}, function(inerr, docRes){
+				res.json({res:docRes.ok, id:docRes.id});
+			});
+		}
   });
-  if(good){
-  	console.log('making dir');
-		Docs.save({auth:req.user._id, title:req.body.title, path:path, type:"dir"}, function(err, docRes){
-			res.json({res:docRes.ok, id:docRes.id});
-		});
-	}
 });
 
 app.put('/doc', function(req, res){
