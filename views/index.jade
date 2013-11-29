@@ -7,9 +7,10 @@ html(ng-app="write", ng-init="loggedIn=#{auth}")
     link(rel='stylesheet', href='/css/twitter-bootstrap.min.css')
     link(rel='stylesheet', href='/css/app.css')
   body(ng-controller='rootCtrl')
-    div(ng-if="loggedIn")
-      a(href='/logout', id='logoutButton', ng-click="logout()") Logout
-      br
+    div(id='navbar')
+      span(ng-if="loggedIn")
+        a(href='/logout', id='logoutButton', ng-click="logout()") Logout
+        br
     //- span(id='errorContainer', ng-if='error.msg!==""')
     alert(class='errorAlert', ng-repeat='error in errors', type="error.type", close="closeError()"){{error.msg}}
     //- br(ng-if='error!==""||loggedIn')

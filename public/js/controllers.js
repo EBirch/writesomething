@@ -271,15 +271,19 @@ controller('editCtrl', function($scope, $log, $http, $location, $rootScope, $tim
 
 }).
 controller('registerCtrl', function($scope, $log, $http, $location, $rootScope){
-  $scope.test={};
+  $scope.data={};
   $scope.submit=function(){
+    if($scope.data.password!==$scope.data.passwordConfirm){
+      $scope.$parent.errors=[{msg:"Passwords do not match", type:"error"}];
+      return;
+    }
     $http({
       method : 'POST',
       url : '/register',
       data : {
-        username:$scope.test.username,
-        password:$scope.test.password,
-        email:$scope.test.email
+        username:$scope.data.username,
+        password:$scope.data.password,
+        email:$scope.data.email
       }
     }).success(function(data){
       if(data.res){
@@ -287,7 +291,6 @@ controller('registerCtrl', function($scope, $log, $http, $location, $rootScope){
       }
       else{
         $scope.$parent.errors=[data.err];
-        // console.log($scope.$parent.errors);
       }
     });
   };
