@@ -237,8 +237,17 @@ controller('editCtrl', function($scope, $log, $http, $location, $rootScope, $tim
     });
   }
 
+  $scope.strip=function(html){
+    var tmp=document.createElement("div");
+    tmp.innerHTML=html;
+    if (tmp.textContent==='' && typeof(tmp.innerText)==='undefined') {
+      return '0';
+    }
+    return tmp.textContent||tmp.innerText;
+  }
+
   $scope.countWords=function(){
-    $scope.count=$scope.doc.split(' ').length;
+    $scope.count=strip($scope.doc.replace(/(\r\n|\n|\r)/gm, " ").replace(/^\s+|\s+$/g, "").replace("&nbsp;", " ")).split(/\s+/).length;
   };
 
   $scope.id=editDoc.getDocId();
