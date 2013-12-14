@@ -247,7 +247,7 @@ controller('editCtrl', function($scope, $log, $http, $location, $rootScope, $tim
   }
 
   $scope.countWords=function(){
-    $scope.count=strip($scope.doc.replace(/(\r\n|\n|\r)/gm, " ").replace(/^\s+|\s+$/g, "").replace("&nbsp;", " ")).split(/\s+/).length;
+    $scope.count=$scope.strip($scope.doc.replace(/(\r\n|\n|\r)/gm, " ").replace(/^\s+|\s+$/g, "").replace("&nbsp;", " ")).split(/\s+/).length;
   };
 
   $scope.id=editDoc.getDocId();
@@ -271,19 +271,23 @@ controller('editCtrl', function($scope, $log, $http, $location, $rootScope, $tim
 
 }).
 controller('registerCtrl', function($scope, $log, $http, $location, $rootScope){
-  $scope.data={};
+  $scope.register={};
   $scope.submit=function(){
-    if($scope.data.password!==$scope.data.passwordConfirm){
-      $scope.$parent.errors=[{msg:"Passwords do not match", type:"error"}];
+    if(!$scope.register.$valid){
+      console.log($scope.register)
+      $scope.$parent.errors=[{msg:"Invalid form", type:"error"}];
+      return;
+    }
+    if($scope.register.password!==$scope.register.passwordConfirm){
       return;
     }
     $http({
       method : 'POST',
       url : '/register',
       data : {
-        username:$scope.data.username,
-        password:$scope.data.password,
-        email:$scope.data.email
+        username:$scope.register.username,
+        password:$scope.register.password,
+        email:$scope.register.email
       }
     }).success(function(data){
       if(data.res){

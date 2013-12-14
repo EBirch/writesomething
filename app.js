@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var express = require('express'),
   routes = require('./routes'),
   api = require('./routes/api'),

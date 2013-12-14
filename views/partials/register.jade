@@ -1,13 +1,13 @@
 form(name="register", ng-submit="submit()", novalidate)
 	//- label Username
-	input(type="text", name="username", ng-model="data.username", placeholder="Username", ng-pattern="/[a-zA-Z0-9\-_]*/", ng-minlength=4, ng-maxlength=30, required)
+	input(type="text", name="usernameField", ng-model="register.username", placeholder="Username", ng-pattern="/[a-zA-Z0-9\-_]*/", ng-minlength=4, ng-maxlength=30, required)
 	br
 	//- label Email
-	input(type="email", name="email", ng-model="data.email", placeholder="Email", required)
+	input(type="email", name="emailField", ng-model="register.email", placeholder="Email", required)
 	br
 	//- label Password
-	input(type="password", name="password", ng-model="data.password", placeholder="Password", ng-minlength=4, ng-maxlength=100, required)
+	input(type="password", name="passwordField", ng-model="register.password", placeholder="Password", ng-minlength=4, ng-maxlength=100, required)
 	br
-	input(type="password", name="password", ng-model="data.passwordConfirm", placeholder="Confirm Password", ng-minlength=4, ng-maxlength=100, required)
+	input(type="password", name="passwordConfirmField", ng-model="register.passwordConfirm", placeholder="Confirm Password", ng-minlength=4, ng-maxlength=100, required)
 	br
-	input(type="submit", value="Register")
+	input(type="submit", value="Register", ng-disabled="register.$invalid")
